@@ -1,7 +1,6 @@
 # COURS DE SCIENCE DES DONNÉES
 ## École Nationale de Commerce et de Gestion (ENCG) - 4ème Année
-<img src="![COMPAORE AISSATA  ](https://github.com/user-attachments/assets/95083722-d3bc-44d0-9197-7327fd88dfdb)
-" style="height:464px;margin-right:432px"/>
+<img src="COMPARE AISSATA.jpg" style="height:464px;margin-right:432px"/>
 # COMPAORÉ AISSATA
 
 ---
