@@ -1,4 +1,4 @@
-Voici un exemple de rapport d’étude statistique détaillée au format Markdown pour le dataset "Default of Credit Card Clients" (Yeh, I., UCI Machine Learning Repository). Ce modèle suit la structure d’une EDA professionnelle et peut accueillir vos futures analyses de sorties Python :  
+
 COMPAORÉ AISSATA
 ***
 
@@ -109,4 +109,4 @@ Variables les plus corrélées :
 
 ***
 
-Ce modèle est prêt à être enrichi automatiquement avec les résultats statistiques obtenus dans votre environnement Python.
+
