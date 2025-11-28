@@ -1,9 +1,7 @@
-# Réalisé par COMPAORÉ AISSATA
-
 ## 1. Introduction
 
-Ce projet porte sur l’analyse d’un jeu de données de santé contenant des informations détaillées sur des patients pris en charge dans des établissements hospitaliers.[1][2]
-L’objectif est de décrire le profil des patients, d’identifier les principales conditions médicales et d’analyser les montants facturés selon différents facteurs (type d’admission, maladie, assureur, période).[3][1]
+Ce projet porte sur l’analyse d’un jeu de données de santé contenant des informations détaillées sur des patients pris en charge dans des établissements hospitaliers.  
+L’objectif est de décrire le profil des patients, d’identifier les principales conditions médicales et d’analyser les montants facturés selon différents facteurs (type d’admission, maladie, assureur, période).
 
 ```python
 import pandas as pd
@@ -21,8 +19,8 @@ print(df.info())
 
 ## 2. Description du jeu de données
 
-Le dataset “healthcare_dataset.csv” comporte environ 1 800–2 000 observations et 16 variables principales.[2][1]
-Les variables couvrent des dimensions démographiques (Age, Gender), médicales (Medical Condition, Test Results), organisationnelles (Admission Type, Hospital, Doctor, dates) et financières (Insurance Provider, Billing Amount).[1][2]
+Le dataset “healthcare_dataset.csv” comporte environ 1 800–2 000 observations et 16 variables principales.  
+Les variables couvrent des dimensions démographiques (Age, Gender), médicales (Medical Condition, Test Results), organisationnelles (Admission Type, Hospital, Doctor, dates) et financières (Insurance Provider, Billing Amount).
 
 ```python
 # Résumé statistique
@@ -31,17 +29,15 @@ display(df.describe(include="all").T)
 
 ## 3. Méthodologie d’analyse
 
-L’analyse est réalisée en Python avec pandas, numpy, matplotlib et seaborn dans Google Colab.[4][5]
-Elle comprend une analyse univariée, bivariée, temporelle et des comparaisons de coûts par différentes variables explicatives.[5][3]
-
-(aucun code spécifique ici, ce sont les blocs suivants)
+L’analyse est réalisée en Python avec les bibliothèques pandas, numpy, matplotlib et seaborn dans un environnement de type notebook.  
+Elle comprend une analyse univariée, bivariée, temporelle et des comparaisons de coûts par différentes variables explicatives.
 
 ## 4. Analyse exploratoire des données
 
 ### 4.1 Profil démographique des patients
 
-L’histogramme de l’âge met en évidence la répartition des patients par tranche d’âge.[3][1]
-La répartition par genre permet de voir si le dataset est équilibré entre hommes et femmes.[2][3]
+L’histogramme de l’âge met en évidence la répartition des patients par tranche d’âge.  
+La répartition par genre permet de voir si le dataset est équilibré entre hommes et femmes.
 
 ```python
 # Distribution de l'âge
@@ -63,8 +59,8 @@ plt.show()
 
 ### 4.2 Conditions médicales les plus fréquentes
 
-Les valeurs de Medical Condition couvrent plusieurs pathologies comme l’obésité, l’hypertension, le cancer, l’asthme ou l’arthrite.[1][2]
-Le classement des cinq conditions les plus fréquentes permet de connaître les principaux motifs de prise en charge.[6][3]
+La variable Medical Condition couvre plusieurs pathologies comme l’obésité, l’hypertension, le cancer, l’asthme ou l’arthrite.  
+Le classement des cinq conditions les plus fréquentes permet de connaître les principaux motifs de prise en charge.
 
 ```python
 # Fréquence des conditions médicales
@@ -85,8 +81,8 @@ plt.show()
 
 ### 4.3 Types d’admission
 
-La variable Admission Type distingue les admissions Emergency, Urgent et Elective, reflétant différents niveaux de gravité ou de planification.[2][1]
-La fréquence de chaque type d’admission donne une vision globale de la structure de la demande de soins hospitaliers.[7][3]
+La variable Admission Type distingue les admissions Emergency, Urgent et Elective, reflétant différents niveaux de gravité ou de planification.  
+La fréquence de chaque type d’admission donne une vision globale de la structure de la demande de soins hospitaliers.
 
 ```python
 # Répartition des types d'admission
@@ -105,8 +101,8 @@ plt.show()
 
 ### 5.1 Montant facturé par type d’admission
 
-Les boxplots Billing Amount vs Admission Type résument la distribution des coûts selon le type d’admission.[7][3]
-On peut observer si les admissions d’urgence sont associées à des montants plus élevés que les admissions électives ou urgentes.[3][7]
+Les boxplots Billing Amount vs Admission Type résument la distribution des coûts selon le type d’admission.  
+On peut observer si les admissions d’urgence sont associées à des montants plus élevés que les admissions électives ou urgentes.
 
 ```python
 plt.figure(figsize=(9,5))
@@ -120,8 +116,8 @@ plt.show()
 
 ### 5.2 Montant facturé par condition médicale
 
-En se concentrant sur les cinq conditions les plus fréquentes, les boxplots comparent les coûts par pathologie.[1][3]
-Cela met en évidence les maladies les plus consommatrices de ressources.[8][7]
+En se concentrant sur les cinq conditions les plus fréquentes, les boxplots comparent les coûts par pathologie.  
+Cela met en évidence les maladies les plus consommatrices de ressources.
 
 ```python
 cond_subset = df[df["Medical Condition"].isin(top_conditions)]
@@ -137,8 +133,8 @@ plt.show()
 
 ### 5.3 Montant facturé par assureur
 
-La variable Insurance Provider décrit les principaux organismes d’assurance présents dans le dataset.[2][1]
-Les boxplots du montant facturé par assureur permettent de voir d’éventuelles différences de coûts entre compagnies.[9][7]
+La variable Insurance Provider décrit les principaux organismes d’assurance présents dans le dataset.  
+Les boxplots du montant facturé par assureur permettent de voir d’éventuelles différences de coûts entre compagnies.
 
 ```python
 print(df["Insurance Provider"].value_counts().head(10))
@@ -157,8 +153,8 @@ plt.show()
 
 ## 6. Analyse temporelle
 
-En convertissant Date of Admission, on peut analyser l’évolution des montants facturés par année.[1][2]
-Le montant total annuel indique des tendances globales de coûts dans le temps.[8][3]
+En convertissant la variable Date of Admission, on peut analyser l’évolution des montants facturés par année.  
+Le montant total annuel indique des tendances globales de coûts dans le temps.
 
 ```python
 # Conversion des dates
@@ -179,7 +175,7 @@ plt.show()
 
 ## 7. Corrélations entre variables numériques
 
-L’étude des corrélations entre Age, Billing Amount et éventuellement Duration of Stay permet de voir si certaines variables évoluent ensemble.[5][2]
+L’étude des corrélations entre Age, Billing Amount et éventuellement Duration of Stay permet de voir si certaines variables évoluent ensemble.
 
 ```python
 num_cols = ["Age", "Billing Amount"]
@@ -193,7 +189,3 @@ sns.heatmap(corr, annot=True, cmap="Blues")
 plt.title("Matrice de corrélation (variables numériques)")
 plt.show()
 ```
-
-## 8. Discussion et pistes
-
-Les résultats mettent en évidence des différences de coûts selon les types d’admission, les conditions médicales et les assureurs, ainsi que des profils de patients dominants.
