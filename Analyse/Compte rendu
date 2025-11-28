@@ -1,1 +1,301 @@
+## 1. Introduction
 
+Ce projet porte sur l’analyse et la modélisation d’un dataset de santé contenant des informations sur des patients hospitalisés: caractéristiques démographiques, conditions médicales, organisation des soins et coûts facturés.[^51_1][^51_2]
+L’objectif est de décrire le jeu de données, d’explorer les principales tendances à l’aide de visualisations et de construire un premier modèle de machine learning pour illustrer une approche prédictive (classification du résultat des tests).[^51_3][^51_4]
+
+## 2. Chargement et description des données
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+
+sns.set(style="whitegrid")
+
+# Chargement du fichier CSV
+df = pd.read_csv("/content/healthcare_dataset.csv")  # adapter le chemin si besoin
+
+print("Shape :", df.shape)
+display(df.head())
+print(df.info())
+display(df.describe(include="all").T)
+```
+
+Interprétation:
+
+- Le dataset contient plusieurs dizaines de milliers de lignes et 16 colonnes environ, couvrant le nom, l’âge, le genre, le groupe sanguin, la condition médicale, les dates d’admission et de sortie, le type d’admission, l’hôpital, l’assurance et le montant facturé.[^51_2][^51_1]
+- Le résumé statistique permet de vérifier les types de variables, les valeurs manquantes éventuelles et les ordres de grandeur (âge, montants, etc.).[^51_3]
+
+
+## 3. Profil des patients
+
+### 3.1 Distribution de l’âge
+
+```python
+plt.figure(figsize=(8,5))
+sns.histplot(df["Age"], bins=20, kde=True)
+plt.title("Distribution de l'âge des patients")
+plt.xlabel("Âge")
+plt.ylabel("Effectif")
+plt.show()
+```
+
+Interprétation:
+
+- L’histogramme montre comment les patients se répartissent selon l’âge (par exemple concentration autour de l’âge moyen, présence de jeunes et de personnes âgées).[^51_5]
+- La courbe de densité aide à visualiser la forme globale de la distribution (symétrique, décalée, présence ou non de plusieurs pics).[^51_3]
+
+
+### 3.2 Répartition par genre
+
+```python
+plt.figure(figsize=(6,4))
+sns.countplot(x="Gender", data=df)
+plt.title("Répartition des patients par genre")
+plt.xlabel("Genre")
+plt.ylabel("Nombre de patients")
+plt.show()
+```
+
+Interprétation:
+
+- Le diagramme en barres indique le nombre de patients de chaque genre (Male, Female).[^51_1][^51_2]
+- Il permet de vérifier si le dataset est équilibré selon le genre ou s’il existe un déséquilibre notable dans l’échantillon.[^51_6]
+
+
+## 4. Conditions médicales
+
+### 4.1 Conditions les plus fréquentes
+
+```python
+df["Medical Condition"].value_counts().head(10)
+```
+
+```python
+top_conditions = df["Medical Condition"].value_counts().head(5).index
+
+plt.figure(figsize=(8,5))
+sns.countplot(
+    x="Medical Condition",
+    data=df[df["Medical Condition"].isin(top_conditions)]
+)
+plt.title("Top 5 des conditions médicales")
+plt.xlabel("Condition médicale")
+plt.ylabel("Nombre de patients")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+Interprétation:
+
+- Le tableau des fréquences montre les pathologies les plus courantes, comme l’obésité, l’hypertension, l’asthme, le cancer ou l’arthrite.[^51_2][^51_1]
+- Le graphique des 5 principales conditions donne une vision claire des motifs de prise en charge dominants dans le dataset.[^51_7][^51_4]
+
+
+## 5. Types d’admission
+
+```python
+df["Admission Type"].value_counts()
+```
+
+```python
+plt.figure(figsize=(8,5))
+sns.countplot(x="Admission Type", data=df)
+plt.title("Répartition par type d'admission")
+plt.xlabel("Type d'admission")
+plt.ylabel("Nombre de patients")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+Interprétation:
+
+- La variable Admission Type distingue les admissions d’urgence (Emergency), urgentes (Urgent) et électives (Elective).[^51_7][^51_2]
+- La répartition des types d’admission permet de comprendre la part des admissions non planifiées par rapport aux séjours programmés.[^51_6]
+
+
+## 6. Analyse des coûts (Billing Amount)
+
+### 6.1 Montant facturé par type d’admission
+
+```python
+plt.figure(figsize=(9,5))
+sns.boxplot(x="Admission Type", y="Billing Amount", data=df)
+plt.title("Montant facturé par type d'admission")
+plt.xlabel("Type d'admission")
+plt.ylabel("Montant facturé")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+Interprétation:
+
+- Chaque boxplot résume la distribution du montant facturé pour un type d’admission (médiane, quartiles, valeurs extrêmes).[^51_5][^51_6]
+- On peut observer si les admissions d’urgence ont tendance à être plus coûteuses que les admissions urgentes ou électives.
+
+
+### 6.2 Montant facturé par condition médicale (Top 5)
+
+```python
+cond_subset = df[df["Medical Condition"].isin(top_conditions)]
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="Medical Condition", y="Billing Amount", data=cond_subset)
+plt.title("Montant facturé par condition médicale (Top 5)")
+plt.xlabel("Condition médicale")
+plt.ylabel("Montant facturé")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+Interprétation:
+
+- Ce graphique compare le niveau et la dispersion des coûts pour les pathologies les plus fréquentes.[^51_4][^51_5]
+- Il met en évidence les conditions médicales potentiellement les plus consommatrices de ressources (coûts élevés ou très variables).
+
+
+### 6.3 Montant facturé par assureur
+
+```python
+df["Insurance Provider"].value_counts().head(10)
+```
+
+```python
+top_ins = df["Insurance Provider"].value_counts().head(5).index
+ins_subset = df[df["Insurance Provider"].isin(top_ins)]
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="Insurance Provider", y="Billing Amount", data=ins_subset)
+plt.title("Montant facturé par assureur (Top 5)")
+plt.xlabel("Assureur")
+plt.ylabel("Montant facturé")
+plt.xticks(rotation=45)
+plt.show()
+```
+
+Interprétation:
+
+- Le tableau des fréquences indique les principaux organismes d’assurance présents dans les données.[^51_2][^51_7]
+- La comparaison des montants facturés par assureur peut révéler des différences de profils de patients ou de politiques de prise en charge.[^51_6]
+
+
+## 7. Analyse temporelle
+
+```python
+df["Date of Admission"] = pd.to_datetime(df["Date of Admission"], errors="coerce")
+df["Year"] = df["Date of Admission"].dt.year
+df["Month"] = df["Date of Admission"].dt.month
+
+billing_by_year = df.groupby("Year")["Billing Amount"].sum().reset_index()
+
+plt.figure(figsize=(8,5))
+sns.barplot(x="Year", y="Billing Amount", data=billing_by_year)
+plt.title("Montant total facturé par année")
+plt.xlabel("Année")
+plt.ylabel("Montant total facturé")
+plt.show()
+```
+
+Interprétation:
+
+- La conversion des dates permet de regrouper les montants facturés par année d’admission.[^51_1][^51_2]
+- Le diagramme en barres montre l’évolution du montant total facturé au fil des années, ce qui permet de repérer des tendances globales (augmentation, stabilité ou baisse).[^51_5]
+
+
+## 8. Corrélations entre variables numériques
+
+```python
+num_cols = ["Age", "Billing Amount"]
+if "Duration of Stay (Days)" in df.columns:
+    num_cols.append("Duration of Stay (Days)")
+
+corr = df[num_cols].corr()
+
+plt.figure(figsize=(6,4))
+sns.heatmap(corr, annot=True, cmap="Blues", fmt=".2f")
+plt.title("Matrice de corrélation (variables numériques)")
+plt.show()
+```
+
+Interprétation:
+
+- La matrice de corrélation mesure la force de la relation linéaire entre les variables numériques sélectionnées.[^51_8][^51_3]
+- Des corrélations fortes indiquent que les variables évoluent ensemble, tandis qu’une corrélation proche de zéro suggère une relation faible ou inexistante.
+
+
+## 9. Mini modèle de machine learning (régression logistique)
+
+### 9.1 Préparation des données
+
+```python
+# On garde uniquement les résultats Normal et Abnormal
+df_model = df[df["Test Results"].isin(["Normal", "Abnormal"])].copy()
+
+# Variable cible : 1 = Abnormal, 0 = Normal
+df_model["target"] = (df_model["Test Results"] == "Abnormal").astype(int)
+
+# Variables explicatives
+features = ["Age", "Gender", "Medical Condition", "Admission Type"]
+
+X = df_model[features]
+y = df_model["target"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+```
+
+Interprétation:
+
+- La cible du modèle est la probabilité d’avoir un résultat de test anormal (Abnormal).[^51_9][^51_2]
+- Les variables explicatives retenues sont l’âge, le genre, la condition médicale et le type d’admission; les données sont divisées en ensembles d’entraînement et de test.[^51_10][^51_11]
+
+
+### 9.2 Pipeline de prétraitement et apprentissage
+
+```python
+cat_cols = ["Gender", "Medical Condition", "Admission Type"]
+num_cols_model = ["Age"]
+
+preprocess = ColumnTransformer(
+    transformers=[
+        ("cat", OneHotEncoder(handle_unknown="ignore"), cat_cols),
+        ("num", "passthrough", num_cols_model)
+    ]
+)
+
+log_reg = LogisticRegression(max_iter=1000)
+
+clf = Pipeline(steps=[
+    ("preprocess", preprocess),
+    ("model", log_reg)
+])
+
+clf.fit(X_train, y_train)
+```
+
+Interprétation:
+
+- Les variables catégorielles sont encodées en variables numériques à l’aide d’un OneHotEncoder, tandis que l’âge est conservé tel quel.[^51_12][^51_10]
+- La régression logistique apprend à associer un profil de patient à une probabilité d’avoir un résultat de test normal ou anormal.[^51_11][^51_13]
+
+
+### 9.3 Évaluation du modèle
+
+```python
+y_pred = clf.predict(X_test)
+
+print("Matrice de confusion :")
+print(confusion_matrix(y_test, y_pred))
+
+print("\nRapport de classification :")
+print(classification_report(y_test, y_pred))
+```
