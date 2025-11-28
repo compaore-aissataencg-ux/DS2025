@@ -1,6 +1,6 @@
 # Analyse d’un jeu de données de santé et modèle prédictif  
 *(Dataset : Healthcare Dataset – Kaggle)*  
-# Fait par AISSATA COMPAORE
+
 ## 1. Introduction
 
 L’objectif de ce travail est de :  
@@ -181,5 +181,4 @@ Ce travail a permis de :
 - **Explorer** les principales tendances à l’aide de visualisations (profil des patients, répartition des conditions médicales, coûts et résultats de tests) ;  
 - **Construire un premier modèle de machine learning** pour prédire le résultat des tests médicaux (`Test Results`) à partir de plusieurs caractéristiques du patient et de son admission.
 
-
- 
+Même si le modèle est perfectible, il illustre une démarche complète de data science, depuis la compréhension des données jusqu’à la mise en place d’un modèle prédictif et l’interprétation de ses résultats.
