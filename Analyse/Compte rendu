@@ -1,1 +1,107 @@
+# Analyse de régression sur le dataset Healthcare
+
+## 1. Description du jeu de données
+
+Le jeu de données contient 55 500 observations de patients, avec des variables démographiques et médicales (Age, Gender, Medical Condition, Room Number, Billing Amount, etc.).
+
+Points clés du résumé statistique:
+- Age: moyenne ≈ 51,5 ans, min = 13, max = 89.
+- Billing Amount: moyenne ≈ 25 539, écart-type important, valeurs de -2008 à ≈ 52 764.
+- Room Number: varie de 101 à 500.
+
+Ces statistiques suggèrent une population adulte avec une forte variabilité des coûts de facturation.
+
+## 2. Objectif de l’étude
+
+L’objectif est d’analyser la relation entre certaines variables explicatives et le **Billing Amount**:
+- Age → Billing Amount
+- Room Charges (ou autre variable pertinente) → Billing Amount
+
+Nous utilisons la régression linéaire simple pour:
+- Visualiser les relations (nuages de points + droite de régression)
+- Mesurer la qualité de l’ajustement avec le coefficient de détermination R².
+
+## 3. Prétraitement des données
+
+Étapes principales:
+- Sélection des colonnes pertinentes (par ex. `['Age', 'Billing Amount']`).
+- Suppression des valeurs manquantes avec `dropna()`.
+- Vérification des types de variables pour s’assurer qu’elles sont numériques.
+
+Ce prétraitement garantit que l’ajustement du modèle ne soit pas biaisé par des valeurs manquantes ou non numériques.
+
+## 4. Régression linéaire: Age → Billing Amount
+
+### 4.1 Visualisation
+
+Un nuage de points a été tracé avec:
+- Axe X: Age
+- Axe Y: Billing Amount
+- Ajout d’une droite de régression ajustée par `LinearRegression`.
+
+Visuellement, les points sont fortement dispersés autour de la droite, sans tendance claire.
+
+### 4.2 Résultats du modèle
+
+- Coefficient (pente): [à compléter]
+- Intercept: [à compléter]
+- R²: ≈ 0.000
+
+### 4.3 Interprétation
+
+Un R² proche de 0 signifie que l’âge **n’explique presque aucune** partie de la variabilité des montants facturés. Autrement dit, connaître l’âge du patient ne permet pas de prédire de façon utile le Billing Amount dans ce dataset.
+
+Conclusion partielle:
+- La régression Age → Billing Amount n’est pas pertinente pour la prédiction des coûts.
+
+## 5. Régression linéaire: Room Charges → Billing Amount
+
+### 5.1 Visualisation
+
+Un autre nuage de points a été tracé:
+- Axe X: Room Charges
+- Axe Y: Billing Amount
+- Droite de régression superposée.
+
+[Décrire ici ce que tu observes visuellement: alignement approximatif, forme, dispersion…]
+
+### 5.2 Résultats du modèle
+
+- Coefficient (pente): [à compléter]
+- Intercept: [à compléter]
+- R²: [valeur obtenue]
+
+### 5.3 Interprétation
+
+- Si R² est significativement plus élevé que 0:
+  - Les Room Charges expliquent une partie notable des variations du Billing Amount.
+  - La relation semble plus informative que celle avec l’âge.
+- Si R² reste faible:
+  - Même les Room Charges ne suffisent pas à expliquer le Billing Amount.
+  - D’autres variables (durée de séjour, type d’admission, tests, etc.) pourraient être nécessaires.
+
+Conclusion partielle:
+- [Compléter: variable plus pertinente ou faible pouvoir explicatif global.]
+
+## 6. Discussion et limites
+
+- Les modèles utilisés sont des **régressions linéaires simples**: une variable explicative à la fois.
+- Le Billing Amount est probablement influencé par plusieurs facteurs simultanément (Medical Condition, Medication, Test Results, etc.).
+- Il serait intéressant de passer à une **régression linéaire multiple** ou à d’autres modèles de machine learning pour améliorer la prédiction.
+
+Limites:
+- Pas de prise en compte de la colinéarité entre variables.
+- Pas de validation croisée ni de séparation train/test dans cette première analyse.
+
+## 7. Conclusion
+
+- La variable Age n’est pas un bon prédicteur du Billing Amount (R² ≈ 0).
+- Room Charges peut (ou non) être un meilleur prédicteur, selon la valeur de R² trouvée.
+- Pour une vraie modélisation des coûts hospitaliers, il faut intégrer plusieurs variables et évaluer rigoureusement les modèles.
+
+## 8. Pistes de travaux futurs
+
+- Construire un modèle de régression multiple avec plusieurs variables explicatives.
+- Tester des modèles non linéaires ou des algorithmes de machine learning (Random Forest, Gradient Boosting, etc.).
+- Mettre en place une séparation train/test et une validation croisée pour évaluer la généralisation du modèle.
 
