@@ -1,5 +1,5 @@
 
-COMPAORÉ AISSATA
+COMPAORÉ AISSaTA
 ***
 
 # Analyse Statistique Détaillée  
