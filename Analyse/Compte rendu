@@ -1,1 +1,182 @@
+***
+Fait par AISSATA COMPAORE
+## 1. Introduction
 
+L’objectif de ce travail est de :  
+- décrire le jeu de données « Healthcare Dataset » ;  
+- explorer les principales tendances à l’aide de visualisations ;  
+- construire un premier modèle de machine learning pour prédire le **résultat des tests médicaux** (`Test Results` : Normal, Abnormal, Inconclusive).
+
+Ce rapport suit une démarche classique de data science : description, analyse exploratoire (EDA), puis modélisation prédictive.
+
+## 2. Description du jeu de données
+
+Le dataset contient des données synthétiques sur des patients hospitalisés.  
+
+- Unité d’observation : une admission / un dossier patient.  
+- Taille du jeu de données : `n_lignes` lignes et `n_colonnes` colonnes (à remplacer par `df.shape`).  
+
+### 2.1 Principales variables
+
+- `Name` : nom du patient.  
+- `Age` : âge du patient en années.  
+- `Gender` : sexe (Male / Female).  
+- `Blood Type` : groupe sanguin (A+, A−, B+, B−, AB+, AB−, O+, O−).  
+- `Medical Condition` : diagnostic principal (Diabetes, Hypertension, Asthma, Cancer, Obesity, Arthritis, etc.).  
+- `Date of Admission` : date d’admission.  
+- `Doctor` : médecin responsable.  
+- `Hospital` : établissement de santé.  
+- `Insurance Provider` : assureur.  
+- `Billing Amount` : montant facturé pour le séjour.  
+- `Room Number` : numéro de chambre.  
+- `Admission Type` : type d’admission (Emergency, Elective, Urgent).  
+- `Discharge Date` : date de sortie.  
+- `Medication` : médicament principal prescrit.  
+- `Test Results` : résultat des tests médicaux (*Normal*, *Abnormal*, *Inconclusive).  
+  → C’est la **variable cible** de notre modèle de classification.
+
+### 2.2 Statistiques descriptives
+
+À partir des commandes `df["Age"].describe()` et `df["Billing Amount"].describe()`, on obtient :  
+
+- Âge :  
+  - moyenne : `age_mean` ans ;  
+  - minimum : `age_min` ans ;  
+  - maximum : `age_max` ans.  
+
+- Montant de facturation (`Billing Amount`) :  
+  - moyenne : `bill_mean` ;  
+  - minimum : `bill_min` ;  
+  - maximum : `bill_max`.  
+
+La variable `Test Results` comporte trois classes : **Normal**, **Abnormal** et **Inconclusive**.  
+La répartition observée (via `value_counts()`) montre que la classe **Abnormal** est la plus fréquente, ce qui indique une proportion importante de patients présentant des résultats de tests anormaux. Cette distribution des classes est importante, car un déséquilibre peut influencer les performances du modèle de classification.
+
+## 3. Analyse exploratoire des données (EDA)
+
+### 3.1 Profil démographique des patients
+
+- Distribution de l’âge  
+  - Visualisation : histogramme de la variable `Age`.  
+  - Commentaire (exemple) :  
+    > La distribution de l’âge est globalement centrée autour de la cinquantaine, avec une majorité de patients entre `X` et `Y` ans. On observe peu de valeurs extrêmes, ce qui suggère une population essentiellement adulte.
+
+- Répartition par sexe (`Gender`)  
+  - Visualisation : diagramme en barres Male vs Female.  
+  - Commentaire (exemple) :  
+    > La répartition par sexe est relativement équilibrée entre hommes et femmes, ce qui limite le risque de biais lié au genre dans l’analyse.
+
+### 3.2 Variables médicales et administratives
+
+- Conditions médicales (`Medical Condition`)  
+  - Visualisation : barplot des différentes pathologies.  
+  - Commentaire (exemple) :  
+    > Les conditions les plus fréquentes sont par exemple l’hypertension et le diabète, ce qui reflète des maladies chroniques courantes dans la population. Les autres pathologies (asthme, cancer, obésité, arthritis) sont moins représentées.
+
+- Types d’admission (`Admission Type`)  
+  - Visualisation : barplot Emergency / Elective / Urgent.  
+  - Commentaire (exemple) :  
+    > Les admissions de type Emergency sont majoritaires, ce qui suggère que de nombreux patients arrivent dans un contexte d’urgence médicale. Les admissions Elective et Urgent sont moins fréquentes.
+
+### 3.3 Facturation et résultats de tests
+
+- Distribution du `Billing Amount`  
+  - Visualisation : histogramme ou boxplot de `Billing Amount`.  
+  - Commentaire (exemple) :  
+    > Le montant de facturation présente une distribution étalée, avec quelques valeurs extrêmes. La majorité des séjours se situe autour de `bill_mean` (à préciser), ce qui correspond à un coût moyen modéré.
+
+- `Billing Amount` selon `Test Results`  
+  - Visualisation : boxplot de `Billing Amount` en fonction de `Test Results`.  
+  - Commentaire (exemple) :  
+    > On observe que les cas avec des résultats **Abnormal** ont en moyenne un coût plus élevé que les cas **Normal**, ce qui est cohérent avec des tests supplémentaires et des soins plus intensifs. Les cas **Inconclusive** peuvent présenter une variabilité plus importante des coûts.
+
+- Répartition des `Test Results`  
+  - Visualisation : barplot Normal / Abnormal / Inconclusive.  
+  - Commentaire (exemple) :  
+    > La classe **Abnormal** domine, suivie de **Normal**, tandis que **Inconclusive** est la classe la moins représentée. Ce déséquilibre des classes devra être pris en compte lors de l’interprétation des performances du modèle.
+
+## 4. Construction d’un modèle prédictif
+
+### 4.1 Problématique
+
+Nous cherchons à prédire le **résultat des tests médicaux** (`Test Results`) à partir d’informations disponibles sur le patient et son séjour (âge, condition médicale, type d’admission, etc.).  
+Il s’agit d’un **problème de classification multiclasse** (3 classes).
+
+### 4.2 Préparation des données
+
+Les principales étapes de préparation sont les suivantes :
+
+- Suppression des variables peu informatives ou non pertinentes pour la prédiction :  
+  - par exemple : `Name`, `Room Number`, éventuellement les dates ou identifiants trop spécifiques.  
+
+- Sélection des variables explicatives (features) :  
+  - Numériques : `Age`, `Billing Amount`.  
+  - Catégorielles : `Gender`, `Blood Type`, `Medical Condition`, `Admission Type`, `Insurance Provider`, `Hospital`, `Medication`.  
+
+- Encodage des variables catégorielles via **One-Hot Encoding**.  
+
+- Séparation du jeu de données en deux sous-ensembles :  
+  - Entraînement (train) : environ 80 % des données ;  
+  - Test : environ 20 % des données.  
+  - La séparation est réalisée avec `train_test_split`, en utilisant éventuellement `stratify=y` pour conserver la même répartition des classes.
+
+### 4.3 Choix et entraînement du modèle
+
+Pour ce premier modèle, nous utilisons un **Random Forest Classifier**. Ce modèle présente plusieurs avantages :  
+
+- il gère bien les relations non linéaires entre les variables ;  
+- il est robuste à certains outliers et au bruit ;  
+- il fournit une estimation de l’importance des variables.
+
+Le modèle est intégré dans un pipeline comprenant :  
+
+1. Le prétraitement (transformations numériques + encodage des variables catégorielles) ;  
+2. Le classifieur Random Forest.
+
+Le modèle est ensuite entraîné sur l’échantillon d’entraînement, puis évalué sur l’échantillon de test.
+
+### 4.4 Évaluation des performances
+
+Les performances sont évaluées à l’aide de plusieurs métriques :  
+
+- **Accuracy** : proportion globale de bonnes prédictions ;  
+- **Precision**, **Recall** et **F1-score** pour chacune des trois classes (Normal, Abnormal, Inconclusive) ;  
+- **Matrice de confusion** : pour visualiser les erreurs de classification (par exemple, combien de cas Abnormal sont prédits comme Normal, etc.).
+
+Exemple d’interprétation possible (à adapter avec tes résultats) :  
+
+> Le modèle obtient une accuracy globale d’environ `XX %`. Les classes **Normal** et **Abnormal** sont relativement bien prédites, avec des F1-scores satisfaisants. En revanche, la classe **Inconclusive** présente des performances plus faibles, ce qui peut s’expliquer par un nombre d’exemples plus réduit et une frontière de décision moins nette.
+
+### 4.5 Importance des variables
+
+À partir de l’importance des features fournie par le Random Forest, on peut commenter :  
+
+- Les variables les plus importantes pour la prédiction de `Test Results` (par exemple `Medical Condition`, `Billing Amount`, `Age`, `Admission Type`).  
+- Une interprétation intuitive :  
+  > Certaines conditions médicales et certains types d’admission sont fortement liés au risque d’obtenir un résultat de test **Abnormal**, tandis que des montants de facturation plus élevés peuvent refléter des cas plus graves ou plus complexes.
+
+## 5. Limites et pistes d’amélioration
+
+- Le dataset est **synthétique** :  
+  - il ne reflète pas nécessairement toute la complexité des données de santé réelles ;  
+  - les relations observées peuvent être simplifiées.
+
+- Le modèle n’a pas été fortement optimisé :  
+  - pas de recherche systématique d’hyperparamètres (Grid Search / Random Search) ;  
+  - pas de gestion avancée du déséquilibre de classes (pondération des classes, sur-échantillonnage, etc.).
+
+Pistes d’amélioration :  
+
+- Tester et comparer d’autres modèles (régression logistique multinomiale, gradient boosting, XGBoost, etc.).  
+- Optimiser les hyperparamètres du Random Forest (nombre d’arbres, profondeur maximale, etc.).  
+- Gérer le déséquilibre des classes (class weights, SMOTE, etc.).  
+- Créer de nouvelles variables (par exemple, durée de séjour = `Discharge Date - Date of Admission` si les dates sont exploitables).
+
+## 6. Conclusion
+
+Ce travail a permis de :  
+
+- **Décrire** le jeu de données Healthcare Dataset et ses principales variables démographiques, médicales et financières ;  
+- **Explorer** les principales tendances à l’aide de visualisations (profil des patients, répartition des conditions médicales, coûts et résultats de tests) ;  
+- **Construire un premier modèle de machine learning** pour prédire le résultat des tests médicaux (`Test Results`) à partir de plusieurs caractéristiques du patient et de son admissi
+***
