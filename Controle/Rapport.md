@@ -68,7 +68,4 @@ Le score de 52% s'explique par la confusion du modèle entre les différents sta
 
 ## 5. Conclusion et Perspectives
 
-Cette étude a permis de valider la pertinence de variables comme **oldpeak** et **exang** dans la détection des maladies cardiaques. Si le modèle distingue bien les patients sains des patients malades, il peine à différencier précisément le niveau de gravité (1 vs 2 vs 3).
-
-
-2.  *Correction technique :* Corriger la faute de frappe identifiée dans le code (thalch vs thalach) pour s'assurer que la fréquence cardiaque maximale est bien prise en compte par le modèle.
+Cette étude a permis de valider la pertinence de variables comme **oldpeak** et **exang** dans la détection des maladies cardiaques. Si le modèle distingue bien les patients sains des patients malades, il peine à différencier précisément le niveau de gravité (1 vs 2 vs
